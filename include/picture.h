@@ -20,8 +20,8 @@ namespace tree {
 	class BinarySearchTree
 	{
 	private:
-		Node* root;
-		void print(Node* root) {
+		Node<T>* root;
+		void print(Node<T>* root) {
 			if (!root) {
 				print(root->left);
 				cout << root->_val << " ";
@@ -29,7 +29,7 @@ namespace tree {
 			}
 		}
 
-		Node* insertTree(Node* root, int key) {
+		Node* insertTree(Node<T>* root, int key) {
 			if (root == nullptr) {
 				return new Node(key);
 			}
@@ -40,6 +40,15 @@ namespace tree {
 				root->right = insertTree(root->right, key);
 			}
 			return root;
+		}
+
+		void clear(Node<T>* head) {
+			if (!head) {
+				return;
+			}
+			clear(head->_left);
+			clear(head->_right);
+			delete head;
 		}
 	public:
 		BinarySearchTree() : root(nulltpr) {}
@@ -56,16 +65,54 @@ namespace tree {
 			}
 		}
 
-		template <typename T>
-		void insert(<T> key) {
+		bool insert(int key) {
+			root = insertTree(root, key);
+			return true;
+		}
+
+		~BinarySearchTree() {
+			clear(root)
+		}
+
+		bool contains(int key) {
 			if (root == nullptr) {
-				return new Node(key);
+				return false;
+			}
+			if (key == root->key) {
+				return true;
+			}
+			else if (key < root->key) {
+				return contains(root->left, key);
+			}
+			else {
+				return contains(root->right, key);
+			}
+		}
+
+		bool erase(int key) {
+			if (root == nullptr) {
+				return root;
 			}
 			if (key < root->key) {
-				root->left = insertRecursive(root->left, key);
+				root->left = deleteNode(root->left, key);
 			}
 			else if (key > root->key) {
-				root->right = insertRecursive(root->right, key);
+				root->right = deleteNode(root->right, key);
+			}
+			else {
+				if (root->left == nullptr) {
+					Node* temp = root->right;
+					delete root;
+					return temp;
+				}
+				else if (root->right == nullptr) {
+					Node* temp = root->left;
+					delete root;
+					return temp;
+				}
+				Node* temp = findMin(root->right);
+				root->key = temp->key;
+				root->right = deleteNode(root->right, temp->key);
 			}
 			return root;
 		}
