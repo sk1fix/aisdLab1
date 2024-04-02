@@ -154,4 +154,20 @@ std::vector<int> findDuplicates(const std::vector<int>& vec) {
 	}
 	return duplicates;
 }
+std::vector<int> random(int a, int b, size_t n, size_t i) {
+	std::vector<int> res;
+	std::mt19937 gen(i);
+	std::uniform_int_distribution<> distribution(a, b);
+	for (size_t j = 0; j < n; j++) {
+		size_t x = distribution(gen);
+		res.push_back(x);
+	}
+	return res;
+}
+
+int random(int a, int b, size_t i) {
+	std::mt19937 gen(i);
+	std::uniform_int_distribution<> distribution(a, b);
+	return distribution(gen);
+}
 }
