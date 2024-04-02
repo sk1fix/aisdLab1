@@ -2,9 +2,8 @@
 #include <cstdio>
 #include <iostream>
 #include <cstdlib>
-#include <ctime>
 #include <random>
-#include <limits>
+#include <vector>
 using namespace std;
 namespace tree {
 	template <typename T>
@@ -29,9 +28,10 @@ namespace tree {
 			}
 		}
 
-		Node* insertTree(Node<T>* root, int key) {
+		template <typename T>
+		Node<T>* insertTree(Node<T>* root, int key) {
 			if (root == nullptr) {
-				return new Node(key);
+				return new Node<T>(key);
 			}
 			if (key < root->key) {
 				root->left = insertTree(root->left, key);
@@ -42,6 +42,7 @@ namespace tree {
 			return root;
 		}
 
+		template <typename T>
 		void clear(Node<T>* head) {
 			if (!head) {
 				return;
@@ -50,16 +51,46 @@ namespace tree {
 			clear(head->_right);
 			delete head;
 		}
+
+		template <typename T>
+		Node<T>* deleteNode(Node<T>* root, int key) {
+			if (root == nullptr) {
+				return root;
+			}
+			if (key < root->key) {
+				root->left = deleteNode(root->left, key);
+			}
+			else if (key > root->key) {
+				root->right = deleteNode(root->right, key);
+			}
+			else {
+				if (root->left == nullptr) {
+					Node<T>* temp = root->right;
+					delete root;
+					return temp;
+				}
+				else if (root->right == nullptr) {
+					Node<T>* temp = root->left;
+					delete root;
+					return temp;
+				}
+				Node<T>* temp = findMin(root->right);
+				root->key = temp->key;
+				root->right = deleteNode(root->right, temp->key);
+			}
+			return root;
+		}
 	public:
-		BinarySearchTree() : root(nulltpr) {}
+		BinarySearchTree() : root(nullptr) {}
 		BinarySearchTree(const BinarySearchTree& other) {
 			root = nullptr;
-			copyTree(other.root)
+			copyTree(other.root);
 		}
 
-		void copyTree(Node* node) {
+		template <typename T>
+		void copyTree(Node<T>* node) {
 			if (!node) {
-				insert(node->key);
+				insert(node->_val);
 				copyTree(node->left);
 				copyTree(node->right);
 			}
@@ -71,7 +102,7 @@ namespace tree {
 		}
 
 		~BinarySearchTree() {
-			clear(root)
+			clear(root);
 		}
 
 		bool contains(int key) {
@@ -90,31 +121,37 @@ namespace tree {
 		}
 
 		bool erase(int key) {
-			if (root == nullptr) {
-				return root;
-			}
-			if (key < root->key) {
-				root->left = deleteNode(root->left, key);
-			}
-			else if (key > root->key) {
-				root->right = deleteNode(root->right, key);
-			}
-			else {
-				if (root->left == nullptr) {
-					Node* temp = root->right;
-					delete root;
-					return temp;
-				}
-				else if (root->right == nullptr) {
-					Node* temp = root->left;
-					delete root;
-					return temp;
-				}
-				Node* temp = findMin(root->right);
-				root->key = temp->key;
-				root->right = deleteNode(root->right, temp->key);
-			}
-			return root;
+			return deleteNode(root, key);
+		}
+
+		BinarySearchTree operator=(BinarySearchTree other) {
+			std::swap(root, other.root);
+			return *this;
 		}
 	};
+std::vector<int> findDuplicates(const std::vector<int>& vec) {
+	std::vector<int> duplicates;
+	for (size_t i = 0; i < vec.size(); ++i) {
+		bool isDuplicate = false;
+		for (size_t j = 0; j < i; ++j) {
+			if (vec[i] == vec[j]) {
+				isDuplicate = true;
+				break;
+			}
+		}
+		if (isDuplicate) {
+			bool isAlreadyAdded = false;
+			for (int dup : duplicates) {
+				if (vec[i] == dup) {
+					isAlreadyAdded = true;
+					break;
+				}
+			}
+			if (!isAlreadyAdded) {
+				duplicates.push_back(vec[i]);
+			}
+		}
+	}
+	return duplicates;
+}
 }
