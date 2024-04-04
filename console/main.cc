@@ -8,5 +8,8 @@ int main()
 	for (int i = 0; i < size(new_a); i++) {
 		cout << new_a[i];
 	}
+
+	BinarySearchTree<int> bst;
+	bst.fillRandomly(1000);
 	return 0;
 }
