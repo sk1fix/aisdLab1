@@ -98,7 +98,7 @@ namespace tree {
 			root = nullptr;
 			copyTree(other.root);
 		}
-
+		
 		template <typename T>
 		void copyTree(Node<T>* node) {
 			if (!node) {
@@ -287,28 +287,26 @@ namespace tree {
 			cout << "Time taken to erase the vec with " << count << " random numbers: " << time_count_vec / 1000 << " seconds" << endl;
 		}
 	};
+
+	template <typename T>
+	void fillT(const vector<T>& vec, BinarySearchTree<T>& root) {
+		for (int num : vec) {
+			root.insert(num);
+		}
+
+	}
+
+	template <typename T>
 	vector<int> findDuplicates(const vector<int>& vec) {
 		vector<int> duplicates;
+		BinarySearchTree<int> temp;
+		fillT(vec, temp);
 		for (size_t i = 0; i < vec.size(); ++i) {
-			bool isDuplicate = false;
-			for (size_t j = 0; j < i; ++j) {
-				if (vec[i] == vec[j]) {
-					isDuplicate = true;
-					break;
-				}
+			if (temp.contains(vec[i])) {
+				temp.erase(vec[i]);
 			}
-			if (isDuplicate) {
-				bool isAlreadyAdded = false;
-				for (int dup : duplicates) {
-					if (vec[i] == dup) {
-						isAlreadyAdded = true;
-						break;
-					}
-				}
-				if (!isAlreadyAdded) {
-					duplicates.push_back(vec[i]);
-				}
-			}
+			if (!(count(duplicates.begin(), duplicates.end(), vec[i])))
+				duplicates.push_back(vec[i]);
 		}
 		return duplicates;
 	}
