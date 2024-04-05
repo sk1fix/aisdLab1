@@ -47,12 +47,11 @@ namespace tree {
 
 		template <typename T>
 		void clear(Node<T>* head) {
-			if (!head) {
-				return;
+			if (head) {
+				clear(head->left);
+				clear(head->right);
+				delete head;
 			}
-			clear(head->left);
-			clear(head->right);
-			delete head;
 		}
 
 		template <typename T>
@@ -65,32 +64,37 @@ namespace tree {
 		}
 
 		template <typename T>
-		Node<T>* deleteNode(Node<T>* root, int key) {
-			if (root == nullptr) {
-				return root;
+		bool deleteNode(Node<T>*& node, int value) {
+			if (node == nullptr) {
+				return false;
 			}
-			if (key < root->_val) {
-				root->left = deleteNode(root->left, key);
+			if (value < node->_val) {
+				return deleteNode(node->left, value);
 			}
-			else if (key > root->_val) {
-				root->right = deleteNode(root->right, key);
+			else if (value > node->_val) {
+				return deleteNode(node->right, value);
 			}
 			else {
-				if (root->left == nullptr) {
-					Node<T>* temp = root->right;
-					delete root;
-					return temp;
+				if (node->left == nullptr) {
+					Node<T>* temp = node->right;
+					delete node;
+					node = temp;
 				}
-				else if (root->right == nullptr) {
-					Node<T>* temp = root->left;
-					delete root;
-					return temp;
+				else if (node->right == nullptr) {
+					Node<T>* temp = node->left;
+					delete node;
+					node = temp;
 				}
-				Node<T>* temp = findMin(root->right);
-				root->_val = temp->_val;
-				root->right = deleteNode(root->right, temp->_val);
+				else {
+					Node<T>* temp = node->right;
+					while (temp->left) {
+						temp = temp->left;
+					}
+					node->_val = temp->_val;
+					deleteNode(node->right, temp->_val);
+				}
+				return true;
 			}
-			return root;
 		}
 	public:
 		BinarySearchTree() : root(nullptr) {}
@@ -141,8 +145,8 @@ namespace tree {
 			return false;
 		}
 
-		bool erase(int key) {
-			return deleteNode(root, key);
+		void erase(int key) {
+			deleteNode(root, key);
 		}
 
 		BinarySearchTree operator=(BinarySearchTree other) {
@@ -289,11 +293,13 @@ namespace tree {
 	};
 
 	template <typename T>
-	void fillT(const vector<T>& vec, BinarySearchTree<T>& root) {
+	int fillT(const vector<T>& vec, BinarySearchTree<T>& root) {
+		int count = 0;
 		for (int num : vec) {
 			root.insert(num);
+			count++;
 		}
-
+		return count;
 	}
 
 	template <typename T>
@@ -305,9 +311,11 @@ namespace tree {
 			if (temp.contains(vec[i])) {
 				temp.erase(vec[i]);
 			}
-			if (!(count(duplicates.begin(), duplicates.end(), vec[i])))
+			else if (!(count(duplicates.begin(), duplicates.end(), vec[i])))
 				duplicates.push_back(vec[i]);
 		}
 		return duplicates;
 	}
+
+	
 }
