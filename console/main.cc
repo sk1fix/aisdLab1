@@ -8,7 +8,8 @@ int main()
 	for (int i = 0; i < size(new_a); i++) {
 		cout << new_a[i] << endl;
 	}
-
+	/*BinarySearchTree<int> tree;
+	vector<int>new_a = findDuplicates<int>(a, tree);*/
 
 	BinarySearchTree<int> bst;
 	bst.insert(3);

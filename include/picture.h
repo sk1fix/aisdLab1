@@ -98,6 +98,17 @@ namespace tree {
 		}
 	public:
 		BinarySearchTree() : root(nullptr) {}
+		
+		BinarySearchTree(const int* data) {
+			root = nullptr;
+
+			int l = 0;
+
+			for (size_t i = 0; i < sizeof(data);i++) {
+				insert(data[i]);
+			}
+		}
+
 		BinarySearchTree(const BinarySearchTree& other) {
 			root = nullptr;
 			copyTree(other.root);
@@ -292,21 +303,11 @@ namespace tree {
 		}
 	};
 
-	template <typename T>
-	int fillT(const vector<T>& vec, BinarySearchTree<T>& root) {
-		int count = 0;
-		for (int num : vec) {
-			root.insert(num);
-			count++;
-		}
-		return count;
-	}
 
 	template <typename T>
 	vector<int> findDuplicates(const vector<int>& vec) {
 		vector<int> duplicates;
-		BinarySearchTree<int> temp;
-		fillT(vec, temp);
+		BinarySearchTree<int> temp(vec.data());
 		for (size_t i = 0; i < vec.size(); ++i) {
 			if (temp.contains(vec[i])) {
 				temp.erase(vec[i]);
